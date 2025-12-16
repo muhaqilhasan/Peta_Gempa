@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#E2E8F0"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Lokasi -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sheetWilayah"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wilayah"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#1E293B"
+        android:lineSpacingExtra="4dp"/>
+
+    <!-- Info Utama (Mag & Depth) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheetMag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5.0 SR"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#F97316"/>
+
+        <View android:layout_width="16dp" android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KEDALAMAN"
+                android:textSize="10sp"
+                android:textColor="#94A3B8"
+                android:letterSpacing="0.1"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/sheetDepth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 km"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#334155"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sheetTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Waktu"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:textColor="#64748B"/>
+
+    <!-- Potensi Banner -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sheetPotensi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Potensi"
+        android:layout_marginTop="20dp"
+        android:padding="12dp"
+        android:background="#F0FDF4"
+        android:textColor="#15803D"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Action Bar: Coordinates & Map Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_rounded_nav"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KOORDINAT"
+                android:textSize="10sp"
+                android:textColor="#94A3B8"
+                android:letterSpacing="0.05"/>
+            <TextView
+                android:id="@+id/sheetCoords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-7.0, 110.0"
+                android:fontFamily="monospace"
+                android:textSize="14sp"
+                android:textColor="#1E293B"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSeeOnMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lihat Peta"
+            android:backgroundTint="#0F172A"
+            android:textColor="#FFFFFF"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minHeight="40dp"/>
+    </LinearLayout>
+
+</LinearLayout>
