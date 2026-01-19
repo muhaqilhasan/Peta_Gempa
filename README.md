@@ -27,11 +27,11 @@ Berikut adalah tampilan antarmuka dari aplikasi Peta Gempa:
 
 | Splash Screen | Halaman Utama (Gempa) | Peta Lokasi (Leaflet) |
 |:---:|:---:|:---:|
-| <img src="assets/screenshots/splash.png" width="200" /> | <img src="assets/screenshots/home_gempa.png" width="200" /> | <img src="assets/screenshots/map_detail.png" width="200" /> |
+| <img src="assets/screenshots/splash.jpeg" width="200" /> | <img src="assets/screenshots/home_gempa.jpeg" width="200" /> | <img src="assets/screenshots/map_detail.jpeg" width="200" /> |
 
 | Info Cuaca | Detail Bottom Sheet |
 |:---:|:---:|
-| <img src="assets/screenshots/cuaca.png" width="200" /> | <img src="assets/screenshots/bottom_sheet.png" width="200" /> |
+| <img src="assets/screenshots/cuaca.jpeg" width="200" /> | <img src="assets/screenshots/bottom_sheet.jpeg" width="200" /> |
 
 ---
 
