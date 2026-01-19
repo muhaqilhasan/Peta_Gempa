@@ -31,7 +31,7 @@ Berikut adalah tampilan antarmuka dari aplikasi Peta Gempa:
 
 | Info Cuaca | Detail Bottom Sheet |
 |:---:|:---:|
-| <img src="assets/screenshots/cuaca.jpeg" width="200" /> | <img src="assets/screenshots/bottom_sheet.jpeg" width="200" /> |
+| <img src="assets/screenshots/Cuaca.jpeg" width="200" /> | <img src="assets/screenshots/bottom_sheet.jpeg" width="200" /> |
 
 ---
 
@@ -39,7 +39,7 @@ Berikut adalah tampilan antarmuka dari aplikasi Peta Gempa:
 
 Simak bagaimana aplikasi ini bekerja secara langsung:
 
-https://github.com/user-attachments/assets/video-demo.mp4
+[https://github.com/user-attachments/assets/video-demo.mp4](https://github.com/muhaqilhasan/Peta_Gempa/blob/master/assets/video-demo.mp4)
 
 *(Catatan: Jika video tidak muncul, silakan unduh file di folder assets)*
 
@@ -49,7 +49,7 @@ https://github.com/user-attachments/assets/video-demo.mp4
 
 1.  **Clone Repository**
     ```bash
-    git clone [https://github.com/muhaqilhasan/peta_gempa.git](https://github.com/muhaqilhasan/peta_gempa.git)
+    git clone https://github.com/muhaqilhasan/peta_gempa.git
     ```
 2.  **Buka di Android Studio**
     * Buka Android Studio -> File -> Open -> Pilih folder `Peta_Gempa`.
@@ -67,6 +67,6 @@ https://github.com/user-attachments/assets/video-demo.mp4
 
 ## 📄 Kredit
 
-Dikembangkan oleh **Muhaqil Hasan**.
+Dikembangkan oleh **Muhammad Aqil Hasan**.
 
 ---
