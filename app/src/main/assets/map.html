@@ -21,6 +21,16 @@
             padding: 6px 12px; border-radius: 6px; font-size: 11px;
             margin-top: 8px; cursor: pointer; width: 100%;
         }
+        .distance-label {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #0891b2;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #0891b2;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -34,14 +44,44 @@
         maxZoom: 20
     }).addTo(map);
 
-    var markers = [];
+    var quakeLayer = L.layerGroup().addTo(map);
+    var userLayer = L.layerGroup().addTo(map);
+    var lineLayer = L.layerGroup().addTo(map);
+
+    var userMarker = null;
+    var userLat = null;
+    var userLng = null;
+    var currentGempaData = [];
+
+    function updateUserLocation(lat, lng) {
+        userLat = lat;
+        userLng = lng;
+
+        userLayer.clearLayers();
+
+        var userIcon = L.divIcon({
+            className: 'custom-user-icon',
+            html: '<div style="background-color: #3b82f6; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        userMarker = L.marker([lat, lng], {icon: userIcon}).addTo(userLayer);
+        userMarker.bindPopup("Lokasi Anda");
+
+        if (currentGempaData.length > 0) {
+            // Gambar ulang garis dan sesuaikan zoom
+            redrawLines(0); // Default ke gempa terkini (index 0)
+        }
+    }
 
     function updateMapFromAndroid(jsonString) {
         try {
             var data = JSON.parse(jsonString);
+            currentGempaData = data;
 
-            markers.forEach(function(m) { map.removeLayer(m); });
-            markers = [];
+            quakeLayer.clearLayers();
+            lineLayer.clearLayers();
 
             data.forEach(function(gempa, index) {
                 var coords = gempa.Coordinates.split(',');
@@ -53,14 +93,26 @@
                 if(mag >= 5) color = '#f97316';
                 if(mag >= 6) color = '#ef4444';
 
-                var circle = L.circleMarker([lat, lng], {
-                    radius: index === 0 ? 12 : 6,
+                var circleMarker = L.circleMarker([lat, lng], {
+                    radius: index === 0 ? 10 : 6,
                     fillColor: color,
                     color: '#fff',
                     weight: 2,
                     opacity: 1,
                     fillOpacity: 0.9
-                }).addTo(map);
+                });
+
+                var radiusMeters = mag * 15000;
+                var radiusCircle = L.circle([lat, lng], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.2,
+                    weight: 1,
+                    radius: radiusMeters
+                });
+
+                quakeLayer.addLayer(radiusCircle);
+                quakeLayer.addLayer(circleMarker);
 
                 var content = `
                     <div class="popup-mag" style="color:${color}">${gempa.Magnitude} SR</div>
@@ -68,38 +120,102 @@
                     <div class="popup-loc">${gempa.Wilayah}</div>
                     <button class="btn-detail" onclick="Android.onMarkerClick(${index})">Detail</button>
                 `;
-
-                circle.bindPopup(content);
-                markers.push(circle);
-
-                // Auto zoom ke gempa terkini saat pertama load
-                if(index === 0 && !window.hasFocused) {
-                    map.setView([lat, lng], 6);
-                    window.hasFocused = true; // prevent auto zoom on refresh unless forced
-                }
+                circleMarker.bindPopup(content);
             });
+
+            // Jika lokasi user sudah ada, fokuskan tampilan
+            if (userLat !== null && userLng !== null) {
+                redrawLines(0); // Fokus ke gempa terkini + user
+            } else if (currentGempaData.length > 0) {
+                // Fallback jika belum ada lokasi user: fokus ke gempa terkini saja
+                var firstCoords = currentGempaData[0].Coordinates.split(',');
+                map.setView([parseFloat(firstCoords[0]), parseFloat(firstCoords[1])], 6);
+            }
+
         } catch(e) {
             console.log("Error parsing JSON: " + e);
         }
     }
 
-    // Fungsi baru untuk fokus kamera dari Android
-    function focusToLocation(lat, lng) {
-        map.flyTo([lat, lng], 10, {
-            animate: true,
-            duration: 1.5
-        });
+    // Fungsi menggambar garis dan melakukan ZOOM FIT
+    function redrawLines(gempaIndex) {
+        lineLayer.clearLayers();
 
-        // Mencoba mencari marker terdekat di lokasi tersebut untuk membuka popup
-        // (Opsional)
-        markers.forEach(function(marker) {
-            var mLat = marker.getLatLng().lat;
-            var mLng = marker.getLatLng().lng;
-            // Cek presisi sederhana
-            if(Math.abs(mLat - lat) < 0.001 && Math.abs(mLng - lng) < 0.001) {
-                setTimeout(function() { marker.openPopup(); }, 1500); // Buka popup setelah animasi selesai
-            }
+        if (userLat === null || currentGempaData.length === 0) return;
+        if (gempaIndex >= currentGempaData.length) return;
+
+        var targetGempa = currentGempaData[gempaIndex];
+        var coords = targetGempa.Coordinates.split(',');
+        var gLat = parseFloat(coords[0]);
+        var gLng = parseFloat(coords[1]);
+
+        var userLatLng = L.latLng(userLat, userLng);
+        var gempaLatLng = L.latLng(gLat, gLng);
+
+        // 1. Hitung Jarak
+        var distanceMeters = userLatLng.distanceTo(gempaLatLng);
+        var distanceKm = (distanceMeters / 1000).toFixed(1);
+
+        // 2. Gambar Garis
+        var polyline = L.polyline([userLatLng, gempaLatLng], {
+            color: '#64748b',
+            weight: 2,
+            opacity: 0.7,
+            dashArray: '10, 10'
+        }).addTo(lineLayer);
+
+        polyline.bindTooltip(distanceKm + " km", {
+            permanent: true,
+            direction: 'center',
+            className: 'distance-label'
+        }).openTooltip();
+
+        // 3. FIT BOUNDS (Auto Zoom) agar User & Gempa masuk layar
+        // Tambahkan padding agar tidak terlalu mepet pinggir layar
+        var bounds = L.latLngBounds([userLatLng, gempaLatLng]);
+        map.fitBounds(bounds, {
+            padding: [50, 50], // Padding 50px dari semua sisi
+            maxZoom: 12,      // Jangan zoom terlalu dekat jika jaraknya sangat dekat
+            animate: true
         });
+    }
+
+    // Dipanggil saat user klik tombol "Lihat di Peta" dari BottomSheet
+    function focusToLocation(lat, lng) {
+        // Cari index gempa berdasarkan koordinat untuk menggambar garis yang benar
+        var targetIndex = -1;
+
+        // Loop simple untuk cari index (presisi float diperhatikan)
+        for(var i=0; i<currentGempaData.length; i++) {
+            var coords = currentGempaData[i].Coordinates.split(',');
+            var cLat = parseFloat(coords[0]);
+            var cLng = parseFloat(coords[1]);
+
+            // Toleransi selisih koordinat sangat kecil
+            if(Math.abs(cLat - lat) < 0.0001 && Math.abs(cLng - lng) < 0.0001) {
+                targetIndex = i;
+                break;
+            }
+        }
+
+        if(targetIndex !== -1) {
+            // Jika ketemu, gambar garis ke gempa tersebut dan auto-zoom (fitBounds)
+            redrawLines(targetIndex);
+
+            // Buka popup gempa tersebut
+            quakeLayer.eachLayer(function(layer) {
+                if (layer instanceof L.CircleMarker) {
+                    var mLat = layer.getLatLng().lat;
+                    var mLng = layer.getLatLng().lng;
+                    if(Math.abs(mLat - lat) < 0.0001 && Math.abs(mLng - lng) < 0.0001) {
+                        setTimeout(function() { layer.openPopup(); }, 500); // Delay sedikit agar fitBounds selesai dulu
+                    }
+                }
+            });
+        } else {
+            // Fallback: jika index tidak ketemu, hanya flyTo biasa
+            map.flyTo([lat, lng], 8);
+        }
     }
 </script>
 </body>

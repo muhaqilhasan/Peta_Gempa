@@ -1,55 +1,63 @@
 package id.akaruuu.petagempaleaflet
 
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import id.akaruuu.petagempaleaflet.databinding.ItemGempaBinding
 
-class GempaAdapter(private val onClick: (Gempa) -> Unit) : RecyclerView.Adapter<GempaAdapter.ViewHolder>() {
+class GempaAdapter(private val onItemClick: (Gempa) -> Unit) : RecyclerView.Adapter<GempaAdapter.ViewHolder>() {
 
-    private val listGempa = ArrayList<Gempa>()
+    private val data = ArrayList<Gempa>()
 
-    fun setData(newList: List<Gempa>) {
-        listGempa.clear()
-        listGempa.addAll(newList)
+    fun setData(items: List<Gempa>) {
+        data.clear()
+        data.addAll(items)
         notifyDataSetChanged()
     }
 
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvMagnitude: TextView = view.findViewById(R.id.tvMagnitude)
+        val bgMag: View = view.findViewById(R.id.bgMag) // ID Baru untuk background lingkaran
+        val tvWilayah: TextView = view.findViewById(R.id.tvWilayah)
+        val tvTanggal: TextView = view.findViewById(R.id.tvTanggal) // Menampung Tanggal + Jam
+        val tvKedalaman: TextView = view.findViewById(R.id.tvKedalaman)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemGempaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_gempa, parent, false)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(listGempa[position])
-    }
+        val gempa = data[position]
 
-    override fun getItemCount() = listGempa.size
+        holder.tvMagnitude.text = gempa.Magnitude
+        holder.tvWilayah.text = gempa.Wilayah
 
-    inner class ViewHolder(private val binding: ItemGempaBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(gempa: Gempa) {
-            binding.tvMagnitude.text = gempa.Magnitude
-            binding.tvWilayah.text = gempa.Wilayah
-            binding.tvJam.text = "${gempa.Tanggal} • ${gempa.Jam}"
-            binding.tvKedalaman.text = gempa.Kedalaman
+        // GABUNGKAN Tanggal dan Jam di satu TextView agar rapi
+        // Contoh: "20 Jan 2024, 14:30 WIB"
+        holder.tvTanggal.text = "${gempa.Tanggal}, ${gempa.Jam}"
 
-            // Atur warna berdasarkan magnitude
-            val mag = gempa.Magnitude.toDoubleOrNull() ?: 0.0
-            val color = when {
-                mag >= 6.0 -> Color.parseColor("#EF4444") // Red
-                mag >= 5.0 -> Color.parseColor("#F97316") // Orange
-                else -> Color.parseColor("#22C55E") // Green
-            }
+        holder.tvKedalaman.text = "Kedalaman: ${gempa.Kedalaman}"
 
-            // Ubah warna background lingkaran secara programmatically
-            val bgShape = binding.root.findViewWithTag<android.view.View>("magCircle")?.background as? GradientDrawable
-                ?: (binding.tvMagnitude.parent.parent as android.view.View).background as GradientDrawable
+        // Logika Warna Magnitude (Hijau, Orange, Merah)
+        val mag = gempa.Magnitude.toDoubleOrNull() ?: 0.0
+        val colorCode = when {
+            mag >= 6.0 -> "#EF4444" // Merah (Bahaya)
+            mag >= 5.0 -> "#F97316" // Orange (Waspada)
+            else -> "#10B981"       // Hijau (Aman)
+        }
 
-            bgShape.setColor(color)
+        // Set warna background lingkaran
+        holder.bgMag.backgroundTintList = ColorStateList.valueOf(Color.parseColor(colorCode))
 
-            binding.root.setOnClickListener { onClick(gempa) }
+        holder.itemView.setOnClickListener {
+            onItemClick(gempa)
         }
     }
+
+    override fun getItemCount(): Int = data.size
 }
