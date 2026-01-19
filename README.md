@@ -39,9 +39,9 @@ Berikut adalah tampilan antarmuka dari aplikasi Peta Gempa:
 
 Simak bagaimana aplikasi ini bekerja secara langsung:
 
-[https://github.com/user-attachments/assets/video-demo.mp4](https://github.com/muhaqilhasan/Peta_Gempa/blob/master/assets/video-demo.mp4)
+[https://github.com/user-attachments/assets/video-demo.mp4](assets/video-demo-aplikasi-gempa.gif)
 
-*(Catatan: Jika video tidak muncul, silakan unduh file di folder assets)*
+*(Catatan: Jika video tidak muncul, silakan unduh file di folder assets)*(assets/video-demo.mp4)
 
 ---
 
